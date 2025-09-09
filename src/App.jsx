@@ -2,32 +2,80 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { Search, PlaylistBuilder } from "./components";
+
 
 function App() {
-  const [count, setCount] = useState(0)
+
+const [searchResults, setSearchResults] = useState([
+  {
+  id: 1234,
+  song: '1234',
+  album: 'somealbum',
+  artist: 'Feist',
+  decade: '2000',
+  },
+
+  {
+  id: 23456,
+  song: 'Lost in your Eyes',
+  album: 'I forget',
+  artist: 'Debbie Gibson',
+  decade: '1980',
+  },
+  {
+  id: 54321,
+  song: 'Good Luck, Babe',
+  album: 'Pink Pony Club',
+  artist: 'Chappell Roan',
+  decade: '2020',
+  },
+  ])
+
+const [playlist, setPlaylist] = useState([
+  {
+  id: 123456,
+  song: 'Party time',
+  album: 'Hi',
+  artist: 'Pink',
+  decade: '2000',
+  },
+
+  {
+  id: 321345,
+  song: 'Gonna Get Over You',
+  album: 'Something',
+  artist: 'Sarah Barellis',
+  decade: '2010',
+  },
+  {
+  id: 123432,
+  song: 'Material Girl',
+  album: 'Hello',
+  artist: 'Madonna',
+  decade: '1980',
+  },
+  ])
+  
+  function handleToggle(id) {
+  // Check if the item is in searchResults
+  const inSearch = searchResults.find(item => item.id === id);
+  if (inSearch) {
+    // Remove from searchResults, add to playlist
+    setSearchResults(searchResults.filter(item => item.id !== id));
+    setPlaylist([...playlist, inSearch]);
+  } else {
+    // Remove from playlist, add to searchResults
+    const inPlaylist = playlist.find(item => item.id === id);
+    setPlaylist(playlist.filter(item => item.id !== id));
+    setSearchResults([...searchResults, inPlaylist]);
+  }
+}
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Search />
+      <PlaylistBuilder onToggle={handleToggle} searchResults={searchResults} playlist={playlist}/>
     </>
   )
 }
