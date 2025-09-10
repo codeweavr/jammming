@@ -1,11 +1,16 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Search, PlaylistBuilder } from "./components";
 
+const clientId = "5a07336e68e440e6a02a02fdcf5ae388";
+const redirectUri = "https://codeweavr.github.io/jammming/"; // must match what's in your Spotify dashboard
+const scopes = []; // can be anything you want, or even empty []
 
 function App() {
+
+const [token, setToken] = useState(null);
 
 const [searchResults, setSearchResults] = useState([
   {
@@ -57,6 +62,25 @@ const [playlist, setPlaylist] = useState([
   },
   ])
   
+  // On load, check if Spotify redirected back with a token
+  useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hash.get("access_token");
+
+    if (accessToken) {
+      setToken(accessToken);
+      console.log("Spotify token:", accessToken);
+      window.location.hash = ""; // clean up the URL
+    }
+  }, []);
+
+  // Build login URL
+  const loginUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}
+    &response_type=token
+    &redirect_uri=${encodeURIComponent(redirectUri)}
+    &scope=${encodeURIComponent(scopes.join(" "))}`.replace(/\s+/g, "");
+
+
   function handleToggle(id) {
   // Check if the item is in searchResults
   const inSearch = searchResults.find(item => item.id === id);
@@ -74,6 +98,13 @@ const [playlist, setPlaylist] = useState([
 
   return (
     <>
+       <div>
+      {!token ? (
+        <a href={loginUrl}>Login with Spotify</a>
+      ) : (
+        <p>Token acquired! Check console.</p>
+      )}
+      </div>
       <Search />
       <PlaylistBuilder onToggle={handleToggle} searchResults={searchResults} playlist={playlist}/>
     </>
