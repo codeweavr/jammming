@@ -100,7 +100,7 @@ const [playlist, setPlaylist] = useState([
     <>
        <div>
       {!token ? (
-        <a href={loginUrl}>Login with Spotify</a>
+        <a href={loginUrl}>V2 Login with Spotify</a>
       ) : (
         <p>Token acquired! Check console.</p>
       )}
